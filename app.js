@@ -1,9 +1,7 @@
 import readline from 'readline-sync';
-import fs from 'fs';
-
 import Player from './classes/Player.js';
-import Riddle from './classes/Riddle.js';
-import { read, create, update, remove } from './riddles/riddleManagement.js';
+
+import { play, create, update, delit,showAll } from './riddles/riddleManagement.js';
 
 console.log("Welcome to the Riddle Game!");
 
@@ -28,14 +26,7 @@ Select an action:
 
     switch (choice) {
         case "1": {
-            const riddles = read();
-            for (const item of riddles) {
-                const start = Date.now();
-                const currentRiddle = new Riddle(item);
-                currentRiddle.ask();
-                const end = Date.now();
-                player1.recordTime(start, end);
-            }
+            play(player1);
             break;
         }
 
@@ -44,10 +35,7 @@ Select an action:
             break;
 
         case "3": {
-            const riddles = read();
-            riddles.forEach(r => {
-                console.log(`ID: ${r.id}, Name: ${r.name}, Question: ${r.taskDescription}, Answer: ${r.correctAnswer}`);
-            });
+            showAll();
             break;
         }
 
@@ -56,7 +44,7 @@ Select an action:
             break;
 
         case "5":
-            remove();
+            delit();
             break;
 
         case "6":

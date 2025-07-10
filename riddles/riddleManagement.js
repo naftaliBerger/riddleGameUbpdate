@@ -1,5 +1,7 @@
 import fs from "fs";
 import rl from "readline-sync";
+import Riddle from '../classes/Riddle.js';  
+
 
 
 //read
@@ -15,7 +17,8 @@ export function read() {
 
 //create
 export function create() {
-  const data = fs.readFileSync("./riddles/db.txt", "utf8");
+  const data = fs.writeFileSync("./riddles/db.txt", JSON.stringify(allData, null, 2));
+  ;
   const allData = JSON.parse(data);
 
   const puzzleName = rl.question("Please enter a name for the puzzle: ");
@@ -35,9 +38,11 @@ export function create() {
 }
 
 
+//update
 export function update() {
     try {
-      const data = fs.readFileSync("./riddles/db.txt", "utf8");
+      const data = fs.writeFileSync("./riddles/db.txt", JSON.stringify(allData, null, 2));
+
       const allData = JSON.parse(data);
   
       const idToUpdate = parseInt(rl.question("Enter the ID of the puzzle to update: "));
@@ -66,8 +71,8 @@ export function update() {
     }
   }
   
-
-  export function remove() {
+//delit
+  export function delit() {
     try {
       const data = fs.readFileSync("./riddles/db.txt", "utf8");
       const allData = JSON.parse(data);
@@ -93,4 +98,24 @@ export function update() {
       console.log("error:", error.message);
     }
   }
+//play
+  export function play(player) {
+    const riddles = read();
+    for (const item of riddles) {
+        const start = Date.now();
+        const currentRiddle = new Riddle(item);
+        currentRiddle.ask();
+        const end = Date.now();
+        player.recordTime(start, end);
+    }
+}
+
+//showAll
+export function showAll() {
+    const riddles = read();
+    riddles.forEach(r => {
+        console.log(`ID: ${r.id}, Name: ${r.name}, Question: ${r.taskDescription}, Answer: ${r.correctAnswer}`);
+    });
+}
+
   
