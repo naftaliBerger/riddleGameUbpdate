@@ -29,7 +29,7 @@ export async function createRiddle() {
 }
 
 export async function updateRiddle() {
-  const id = readline.questionInt("Enter ID of riddle to update: ");
+  const id = readline.question("Enter ID of riddle to update: ");
   const name = readline.question("New riddle name: ");
   const taskDescription = readline.question("New question: ");
   const correctAnswer = readline.question("New correct answer: ");
@@ -45,7 +45,7 @@ export async function updateRiddle() {
 }
 
 export async function deleteRiddle() {
-  const id = readline.questionInt("Enter id of riddle to delete: ");
+  const id = readline.question("Enter id of riddle to delete: ");
   await fetch(`${URL}/${id}`, { method: 'DELETE' });
   console.log("Riddle deleted.");
 }
