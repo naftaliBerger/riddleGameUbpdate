@@ -1,6 +1,6 @@
 import readline from 'readline-sync';
 import Player from './classes/Player.js';
-import {playGame,createRiddle, showAllRiddles,updateRiddle, deleteRiddle} from './manager.js';
+import { playGame, createRiddle, showAllRiddles, updateRiddle, deleteRiddle } from './manager.js';
 
 console.log("Welcome to the Riddle Game!");
 const name = readline.question("What is your name? ");
@@ -16,8 +16,7 @@ Select an action:
 3. View all puzzles
 4. Update puzzle by ID
 5. Delete puzzle by ID
-6. View player statistics
-7. Exit
+6. Exit
   `);
 
   const choice = readline.question("Enter a selection number: ");
@@ -39,13 +38,9 @@ Select an action:
       await deleteRiddle();
       break;
     case "6":
-      player.showStats();
-      break;
-    case "7":
       isRunning = false;
       break;
     default:
       console.log("Invalid selection, please try again.");
   }
 }
-

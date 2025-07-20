@@ -1,5 +1,5 @@
 export default class Player {
-  constructor(name, times) {
+  constructor(name) {
     this.name = name;
     this.times = [];
   }
@@ -8,17 +8,13 @@ export default class Player {
     const duration = (end - start) / 1000;
     this.times.push(duration);
   }
-  
-  showStats() {
-    let sumTimse = 0;
-    this.times.forEach(time => {
-      sumTimse += time;
-    });
-    console.log("sumTimse: ", sumTimse.toFixed(2));
 
-    const average = sumTimse / this.times.length
-    console.log("average: ", average.toFixed(2));
+  getStats() {
+    const sumTime = this.times.reduce((a, b) => a + b, 0);
+    const average = sumTime / this.times.length;
+    return {
+      totalTime: sumTime.toFixed(2),
+      averageTime: average.toFixed(2)
+    };
   }
-
-
 }
