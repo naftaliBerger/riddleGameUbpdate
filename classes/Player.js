@@ -1,7 +1,8 @@
 export default class Player {
-  constructor(name) {
-    this.name = name;
+  constructor(username, token = null) {
+    this.username  = username ;
     this.times = [];
+    this.token = token;
   }
 
   recordTime(start, end) {

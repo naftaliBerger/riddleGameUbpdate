@@ -9,15 +9,17 @@ export async function getAllRiddles() {
   return await res.json();
 }
 
-export async function createRiddle() {
+export async function createRiddle(token) {
   const name = readline.question("Enter riddle name: ");
-  const taskDescription = readline.question("Enter the riddle question: ");
-  const correctAnswer = readline.question("Enter the correct answer: ");
+  const question  = readline.question("Enter the riddle question: ");
+  const answer = readline.question("Enter the correct answer: ");
 
   const res = await fetch(RIDDLE_URL, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, taskDescription, correctAnswer })
+    headers: {
+       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ name, question , answer })
   });
 
   const newRiddle = await res.json();
@@ -27,76 +29,90 @@ export async function createRiddle() {
 export async function showAllRiddles() {
   const riddles = await getAllRiddles();
   riddles.forEach(r =>
-    console.log(`id: ${r.id}  name: ${r.name}  question: ${r.taskDescription}  answer: ${r.correctAnswer}`)
+    console.log(`id: ${r.id}  name: ${r.name}  question: ${r.question }  answer: ${r.answer}`)
   );
 }
 
-export async function updateRiddle() {
+export async function updateRiddle(token) {
   const id = readline.question("Enter ID of riddle to update: ");
   const name = readline.question("New riddle name: ");
-  const taskDescription = readline.question("New question: ");
-  const correctAnswer = readline.question("New correct answer: ");
+  const question  = readline.question("New question: ");
+  const answer = readline.question("New correct answer: ");
 
   const res = await fetch(`${RIDDLE_URL}/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name, taskDescription, correctAnswer })
+    headers: {
+       'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}` },
+    body: JSON.stringify({ name, question , answer })
   });
 
   const updated = await res.json();
   console.log("Riddle updated:", updated);
 }
 
-export async function deleteRiddle() {
+export async function deleteRiddle(token) {
   const id = readline.question("Enter id of riddle to delete: ");
-  await fetch(`${RIDDLE_URL}/${id}`, { method: 'DELETE' });
+  await fetch(`${RIDDLE_URL}/${id}`, { method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+   });
   console.log("Riddle deleted.");
 }
 
 export async function playGame(player) {
   const riddles = await getAllRiddles();
+
   for (const item of riddles) {
-    const start = Date.now();
     const currentRiddle = new Riddle(item);
-    currentRiddle.ask();
+    const start = Date.now();
+
+    currentRiddle.ask(); 
+
     const end = Date.now();
     player.recordTime(start, end);
+    console.log(`Answered riddle id ${item.id || item._id} correctly.`);
   }
 
   const stats = player.getStats();
-  console.log(`Total Time: ${stats.totalTime} seconds`);
-  console.log(`Average Time: ${stats.averageTime} seconds`);
+  console.log(`total time: ${stats.totalTime} seconds`);
+  console.log(`average time: ${stats.averageTime} seconds`);
 
-  await savePlayerResult(player.name, stats.totalTime);
+  await savePlayerResult(player.username, stats.totalTime, player.token);
 }
 
-async function savePlayerResult(name, totalTime) {
+async function savePlayerResult(username , totalTime, token) {
   const res = await fetch(PLAYER_URL);
   const players = await res.json();
 
-  const existPlayer = players.find(p => p.name === name);
+  const existPlayer = players.find(p => p.username  === username );
 // console.log(players, existPlayer, name);
 
   if (!existPlayer) {
     await fetch(PLAYER_URL, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        name,
-        shortestPlayingTime: totalTime
-      })
+      headers: { 'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+       },
+      body: JSON.stringify({ username,shortestPlayingTime: totalTime}) 
     });
-    console.log("New player saved!");
-  } else if (parseFloat(totalTime) < parseFloat(existPlayer.shortestPlayingTime)) {
+      
+    console.log("new player saved!");
+  } else if (
+    !existPlayer.shortestPlayingTime ||
+    parseFloat(totalTime) < parseFloat(existPlayer.shortestPlayingTime)) {
     await fetch(`${PLAYER_URL}/${existPlayer.id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+       },
       body: JSON.stringify({
         shortestPlayingTime: totalTime
       })
     });
-    console.log("Existing player updated with better time!");
+    console.log("existing player updated with better time!");
   } else {
-    console.log("No update needed, existing time is better.");
+    console.log("no update needed, existing time is better.");
   }
 }

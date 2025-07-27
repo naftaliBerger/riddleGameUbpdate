@@ -3,8 +3,9 @@ import Player from './classes/Player.js';
 import { playGame, createRiddle, showAllRiddles, updateRiddle, deleteRiddle } from './manager.js';
 
 console.log("Welcome to the Riddle Game!");
-const name = readline.question("What is your name? ");
-const player = new Player(name);
+const username = readline.question("What is your name? ");
+const token = readline.question("Paste your JWT token: ");
+const player = new Player(username, token);
 
 let isRunning = true;
 
@@ -26,16 +27,16 @@ Select an action:
       await playGame(player);
       break;
     case "2":
-      await createRiddle();
+      await createRiddle(player.token);
       break;
     case "3":
       await showAllRiddles();
       break;
     case "4":
-      await updateRiddle();
+      await updateRiddle(player.token);
       break;
     case "5":
-      await deleteRiddle();
+      await deleteRiddle(player.token);
       break;
     case "6":
       isRunning = false;

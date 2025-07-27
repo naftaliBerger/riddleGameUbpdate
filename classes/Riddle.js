@@ -1,22 +1,23 @@
 import readline from 'readline-sync';
 
-export default class riddle {
-    constructor({ id, name, taskDescription, correctAnswer }) {
-        this.id = id;
+export default class Riddle {
+    constructor({ id,_id, name, question , correctAnswer,answer }) {
+        this.id = id || _id;
         this.name = name;
-        this.taskDescription = taskDescription;
-        this.correctAnswer = correctAnswer;
+        this.question  = question ;
+        this.answer = correctAnswer || answer;
     }
 
     //
     ask() {
         let bool = true
         while (bool) {
-            console.log(this.taskDescription);
+            console.log(this.question );
             const answer = readline.question("your answer: ");
-            if (answer === this.correctAnswer) {
+            if (answer === this.answer) {
                 console.log("Correct answer!!");
                 bool = false;
+                return true;
             } else {
                 console.log("Incorrect answer, try again");
             }
